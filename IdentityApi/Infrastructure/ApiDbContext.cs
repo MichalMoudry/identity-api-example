@@ -1,9 +1,9 @@
-namespace IdentityApi.Dal;
+namespace IdentityApi.Infrastructure;
 
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-public class ApiDbContext : DbContext
+public class ApiDbContext : IdentityDbContext, IApiDbContext
 {
     protected override void OnConfiguring(DbContextOptionsBuilder options)
         => options.UseSqlite("Data source=identity.db");

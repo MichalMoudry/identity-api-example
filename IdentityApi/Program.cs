@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Identity;
-using IdentityApi.Dal;
+using IdentityApi.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,13 +8,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
-    .AddDbContext<ApiDbContext>()
+    .AddDbContext<IApiDbContext, ApiDbContext>()
     .AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApiDbContext>();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.User.RequireUniqueEmail = true;
+    options.Password.RequireDigit = true;
+    options.Lockout.MaxFailedAccessAttempts = 3;
 });
 
 var app = builder.Build();
@@ -29,6 +31,7 @@ if (app.Environment.IsDevelopment())
 if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
+    app.UseHsts();
 }
 
 var summaries = new[]
