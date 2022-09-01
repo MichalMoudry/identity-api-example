@@ -1,7 +1,7 @@
 namespace IdentityApi.Commands.Api;
 
 /// <summary>
-/// Handler for a specific command.
+/// An interface for a handler used for a specific command.
 /// </summary>
 public interface ICommandHandler<T> where T : ICommand
 {
