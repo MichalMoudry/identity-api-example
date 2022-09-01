@@ -13,4 +13,5 @@ Repository with an example of an identity microservice.
 - Microsoft.AspNetCore.Identity.EntityFrameworkCore
 - Microsoft.EntityFrameworkCore.Sqlite
 - Microsoft.EntityFrameworkCore.Tools
+- FluentValidation
 - Swashbuckle.AspNetCore
