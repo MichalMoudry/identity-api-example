@@ -1,34 +1,31 @@
 namespace IdentityApi.Commands.Handlers;
 
-using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using IdentityApi.Commands;
 using IdentityApi.Commands.Api;
-using IdentityApi.Infrastructure;
-using IdentityApi.Validators;
 
 /// <summary>
 /// A handler class for a <see cref="RegisterCommand"/>.
 /// </summary>
 public class RegisterCommandHandler : ICommandHandler<RegisterCommand>
 {
-    private readonly IApiDbContext _dbContext;
+    private readonly UserManager<IdentityUser> _userManager;
 
-    public RegisterCommandHandler(IApiDbContext dbContext)
+    public RegisterCommandHandler(UserManager<IdentityUser> userManager)
     {
-        _dbContext = dbContext;
+        _userManager = userManager;
     }
 
-    public Task Handle(RegisterCommand command)
+    /// <inheritdoc />
+    public async Task Handle(RegisterCommand command)
     {
-        var validator = new RegisterCommandValidator();
-        var validationResult = validator.Validate(command);
-        if (!validationResult.IsValid)
+        var user = new IdentityUser()
         {
-            var errors = validationResult.Errors;
-            var message = new StringBuilder().AppendJoin('\n', errors);
-            throw new FluentValidation.ValidationException(message.ToString());
-        }
-        throw new NotImplementedException();
+            UserName = command.UserName,
+            Email = command.Email
+        };
+        await _userManager.CreateAsync(user, command.Password);
+        var result = await _userManager.AddToRoleAsync(user, "user");
     }
 }

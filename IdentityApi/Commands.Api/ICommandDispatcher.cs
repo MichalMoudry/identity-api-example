@@ -5,7 +5,6 @@ namespace IdentityApi.Commands.Api;
 /// </summary>
 public interface ICommandDispatcher
 {
-    //https://abdelmajid-baco.medium.com/cqrs-pattern-with-c-a9aff05aae3f
     /// <summary>
     /// Method for sending a specific command to its handler.
     /// </summary>
