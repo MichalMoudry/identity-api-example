@@ -1,6 +1,9 @@
+using System.Text;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using IdentityApi.Infrastructure;
-using IdentityApi.Dispatchers;
+using IdentityApi.Commands;
+using IdentityApi.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,19 +25,40 @@ _ = builder.Services.Configure<IdentityOptions>(options =>
 });
 
 var app = builder.Build();
-var commandDispatcher = new CommandDispatcher(app.Services);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    _ = app.UseSwagger().UseSwaggerUI();
 }
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseHttpsRedirection();
-    app.UseHsts();
+    _ = app.UseHttpsRedirection().UseHsts();
 }
+
+app.MapPost("/register", ([FromBody] RegisterCommand command, UserManager<IdentityUser> userManager) =>
+{
+    var validator = new RegisterCommandValidator();
+    var validationResult = validator.Validate(command);
+    if (!validationResult.IsValid)
+    {
+        var errors = validationResult.Errors;
+        var message = new StringBuilder().AppendJoin('\n', errors);
+        
+        return message.ToString();
+    }
+    /*
+    var user = new IdentityUser()
+    {
+        UserName = command.UserName,
+        Email = command.Email
+    };
+    await _userManager.CreateAsync(user, command.Password);
+    var result = await _userManager.AddToRoleAsync(user, "user");
+    */
+    Console.WriteLine($"{command.Email} | {command.UserName} | {command.Password}");
+    return $"User count: {userManager.Users.Count()}";
+});
 
 app.Run();
