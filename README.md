@@ -19,3 +19,4 @@ Repository with an example of an identity microservice.
 
 ## Useful links
 - https://abdelmajid-baco.medium.com/cqrs-pattern-with-c-a9aff05aae3f
+- https://umayangag.medium.com/jwt-authentication-with-asp-net-core-3-1-identity-for-web-apis-fe36d4bb6630

@@ -1,19 +1,18 @@
 namespace IdentityApi.Commands;
 
 using System.ComponentModel.DataAnnotations;
-using IdentityApi.Commands.Api;
 
 /// <summary>
 /// A command for registering a new user.
 /// </summary>
-public class RegisterCommand : ICommand
+public class RegisterCommand
 {
-    [MinLength(3)]
+    [Required]
     public string? UserName { get; set; }
 
-    [EmailAddress]
+    [Required, EmailAddress]
     public string? Email { get; set; }
 
-    [MinLength(7)]
+    [Required]
     public string? Password { get; set; }
 }
