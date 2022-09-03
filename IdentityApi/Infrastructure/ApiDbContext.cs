@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 public class ApiDbContext : IdentityDbContext
 {
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
-        => options.UseSqlite("Data source=identity.db");
+    /*protected override void OnConfiguring(DbContextOptionsBuilder options)
+        => options.UseSqlite("Data source=identity.db");*/
+    public ApiDbContext(DbContextOptions options) : base(options) {}
 }

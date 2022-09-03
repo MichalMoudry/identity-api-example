@@ -5,7 +5,7 @@ VisualStudioVersion = 17.3.32825.248
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityApi", "IdentityApi.csproj", "{FC089B7D-5DE8-407A-842B-2B8B547113AE}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "UnitTests", "..\UnitTests\UnitTests.fsproj", "{9EAD4145-A404-4D12-A926-C8E8D02FB533}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Tests", "..\IdentityApi.Tests\IdentityApi.Tests.fsproj", "{9EAD4145-A404-4D12-A926-C8E8D02FB533}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
