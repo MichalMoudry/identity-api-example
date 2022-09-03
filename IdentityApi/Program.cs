@@ -1,18 +1,20 @@
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using FluentValidation.Results;
 using IdentityApi.Infrastructure;
 using IdentityApi.Commands;
 using IdentityApi.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("Users") ?? "Data Source=identity.db";
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 _ = builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
-    .AddDbContext<ApiDbContext>()
+    .AddSqlite<ApiDbContext>(connectionString)
     .AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApiDbContext>();
 
@@ -37,28 +39,49 @@ if (!app.Environment.IsDevelopment())
     _ = app.UseHttpsRedirection().UseHsts();
 }
 
-app.MapPost("/register", ([FromBody] RegisterCommand command, UserManager<IdentityUser> userManager) =>
+app.MapPost("/register", async ([FromBody] RegisterCommand command, UserManager<IdentityUser> userManager) =>
 {
     var validator = new RegisterCommandValidator();
     var validationResult = validator.Validate(command);
+    var sb = new StringBuilder();
     if (!validationResult.IsValid)
     {
         var errors = validationResult.Errors;
-        var message = new StringBuilder().AppendJoin('\n', errors);
-        
-        return message.ToString();
+        return Results.BadRequest(CreateErrorMessage<ValidationFailure>(errors));
     }
-    /*
     var user = new IdentityUser()
     {
         UserName = command.UserName,
         Email = command.Email
     };
-    await _userManager.CreateAsync(user, command.Password);
-    var result = await _userManager.AddToRoleAsync(user, "user");
-    */
-    Console.WriteLine($"{command.Email} | {command.UserName} | {command.Password}");
-    return $"User count: {userManager.Users.Count()}";
-});
+    var createResult = await userManager.CreateAsync(user, command.Password);
+    if (!createResult.Succeeded)
+    {
+        var errors = createResult.Errors.Select(e => e.Code);
+        return Results.BadRequest(CreateErrorMessage<string>(errors));
+    }
+    var addToRoleResult = await userManager.AddToRoleAsync(user, "user");
+    if (!addToRoleResult.Succeeded)
+    {
+        var errors = addToRoleResult.Errors.Select(e => e.Code);
+        return Results.Problem(CreateErrorMessage<string>(errors));
+    }
+    return Results.Ok($"User count: {userManager.Users.Count()}");
+})
+.WithName("Register").Produces(StatusCodes.Status200OK).Produces(StatusCodes.Status400BadRequest).ProducesProblem(500);
 
 app.Run();
+
+/// <summary>
+/// Method for creating an error message.
+/// </summary>
+/// <param name="errors">A collection of errors.</param>
+string CreateErrorMessage<T>(IEnumerable<T>? errors)
+{
+    if (errors == null)
+    {
+        return "";
+    }
+    var stringBuilder = new StringBuilder().AppendJoin("\n", errors);
+    return stringBuilder.ToString();
+}
