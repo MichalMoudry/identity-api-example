@@ -1,9 +1,9 @@
 namespace IdentityApi.Validators;
 
 using FluentValidation;
-using IdentityApi.Commands;
+using IdentityApi.Models;
 
-public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
+public class RegisterCommandValidator : AbstractValidator<RegisterModel>
 {
     public RegisterCommandValidator()
     {

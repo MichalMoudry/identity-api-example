@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using FluentValidation.Results;
 using IdentityApi.Infrastructure;
-using IdentityApi.Commands;
+using IdentityApi.Models;
 using IdentityApi.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,10 +48,10 @@ if (!app.Environment.IsDevelopment())
     _ = app.UseHttpsRedirection().UseHsts();
 }
 
-app.MapPost("/register", async ([FromBody] RegisterCommand command, UserManager<IdentityUser> userManager) =>
+app.MapPost("/register", async ([FromBody] RegisterModel model, UserManager<IdentityUser> userManager) =>
 {
     var validator = new RegisterCommandValidator();
-    var validationResult = validator.Validate(command);
+    var validationResult = validator.Validate(model);
     var sb = new StringBuilder();
     if (!validationResult.IsValid)
     {
@@ -60,10 +60,10 @@ app.MapPost("/register", async ([FromBody] RegisterCommand command, UserManager<
     }
     var user = new IdentityUser()
     {
-        UserName = command.UserName,
-        Email = command.Email
+        UserName = model.UserName,
+        Email = model.Email
     };
-    var createResult = await userManager.CreateAsync(user, command.Password);
+    var createResult = await userManager.CreateAsync(user, model.Password);
     if (!createResult.Succeeded)
     {
         var errors = createResult.Errors.Select(e => e.Code);
