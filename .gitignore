@@ -2,3 +2,4 @@
 */obj/*
 *.db
 TestResults
+.vscode/settings.json
