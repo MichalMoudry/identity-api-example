@@ -50,7 +50,7 @@ if (!app.Environment.IsDevelopment())
 
 app.MapPost("/register", async ([FromBody] RegisterModel model, UserManager<IdentityUser> userManager) =>
 {
-    var validator = new RegisterCommandValidator();
+    var validator = new RegisterModelValidator();
     var validationResult = validator.Validate(model);
     var sb = new StringBuilder();
     if (!validationResult.IsValid)

@@ -3,9 +3,9 @@ namespace IdentityApi.Validators;
 using FluentValidation;
 using IdentityApi.Models;
 
-public class RegisterCommandValidator : AbstractValidator<RegisterModel>
+public class RegisterModelValidator : AbstractValidator<RegisterModel>
 {
-    public RegisterCommandValidator()
+    public RegisterModelValidator()
     {
         RuleFor(x => x.UserName).NotNull().NotEmpty().MinimumLength(3);
         RuleFor(x => x.Email).NotNull().NotEmpty().MinimumLength(5);
