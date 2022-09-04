@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using FluentValidation.Results;
 using IdentityApi.Infrastructure;
 using IdentityApi.Commands;
@@ -18,12 +19,20 @@ _ = builder.Services
     .AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApiDbContext>();
 
-// Indentity options config.
+// Indentity options config and JWT.
 _ = builder.Services.Configure<IdentityOptions>(options =>
 {
     options.User.RequireUniqueEmail = true;
     options.Password.RequireDigit = true;
     options.Lockout.MaxFailedAccessAttempts = 3;
+})
+.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
+    {
+        ValidAudience = builder.Configuration["Audience"],
+        ValidIssuer = builder.Configuration["Issuer"]
+    };
 });
 
 var app = builder.Build();
