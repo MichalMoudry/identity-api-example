@@ -1,9 +1,10 @@
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using FluentValidation.Results;
 using IdentityApi.Infrastructure;
-using IdentityApi.Commands;
+using IdentityApi.Models;
 using IdentityApi.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,12 +19,20 @@ _ = builder.Services
     .AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApiDbContext>();
 
-// Indentity options config.
+// Indentity options config and JWT.
 _ = builder.Services.Configure<IdentityOptions>(options =>
 {
     options.User.RequireUniqueEmail = true;
     options.Password.RequireDigit = true;
     options.Lockout.MaxFailedAccessAttempts = 3;
+})
+.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
+    {
+        ValidAudience = builder.Configuration["Audience"],
+        ValidIssuer = builder.Configuration["Issuer"]
+    };
 });
 
 var app = builder.Build();
@@ -39,10 +48,10 @@ if (!app.Environment.IsDevelopment())
     _ = app.UseHttpsRedirection().UseHsts();
 }
 
-app.MapPost("/register", async ([FromBody] RegisterCommand command, UserManager<IdentityUser> userManager) =>
+app.MapPost("/register", async ([FromBody] RegisterModel model, UserManager<IdentityUser> userManager) =>
 {
-    var validator = new RegisterCommandValidator();
-    var validationResult = validator.Validate(command);
+    var validator = new RegisterModelValidator();
+    var validationResult = validator.Validate(model);
     var sb = new StringBuilder();
     if (!validationResult.IsValid)
     {
@@ -51,10 +60,10 @@ app.MapPost("/register", async ([FromBody] RegisterCommand command, UserManager<
     }
     var user = new IdentityUser()
     {
-        UserName = command.UserName,
-        Email = command.Email
+        UserName = model.UserName,
+        Email = model.Email
     };
-    var createResult = await userManager.CreateAsync(user, command.Password);
+    var createResult = await userManager.CreateAsync(user, model.Password);
     if (!createResult.Succeeded)
     {
         var errors = createResult.Errors.Select(e => e.Code);

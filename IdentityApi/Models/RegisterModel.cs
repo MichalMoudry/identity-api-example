@@ -1,11 +1,11 @@
-namespace IdentityApi.Commands;
+namespace IdentityApi.Models;
 
 using System.ComponentModel.DataAnnotations;
 
 /// <summary>
-/// A command for registering a new user.
+/// A model class for registering a new user.
 /// </summary>
-public class RegisterCommand
+public class RegisterModel
 {
     [Required]
     public string? UserName { get; set; }

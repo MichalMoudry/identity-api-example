@@ -1,3 +1,6 @@
+[![Tests](https://github.com/MichalMoudry/identity-microservice-example/actions/workflows/dotnet_test.yaml/badge.svg)](https://github.com/MichalMoudry/identity-microservice-example/actions/workflows/dotnet_test.yaml)
+[![CodeQL](https://github.com/MichalMoudry/identity-microservice-example/actions/workflows/codeql.yml/badge.svg)](https://github.com/MichalMoudry/identity-microservice-example/actions/workflows/codeql.yml)
+
 # Identity microservice example
 Repository with an example of an identity microservice.
 
