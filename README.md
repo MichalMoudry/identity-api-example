@@ -17,7 +17,6 @@ Repository with an example of an identity microservice.
 - Microsoft.EntityFrameworkCore.Sqlite
 - Microsoft.EntityFrameworkCore.Tools
 - FluentValidation
-- OpenTelemetry
 - Swashbuckle.AspNetCore
 
 ## Useful links
