@@ -3,3 +3,4 @@
 *.db
 TestResults
 .vscode/settings.json
+*/.vs
