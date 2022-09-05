@@ -5,11 +5,9 @@
 Repository with an example of an identity microservice.
 
 ## Solution structure
-- Commands
-- Commands.Api
-- Queries
-- Queries.Api
 - Infrastructure
+- Models
+- Validators
 - Migrations
 
 ## Used packages
@@ -17,9 +15,10 @@ Repository with an example of an identity microservice.
 - Microsoft.EntityFrameworkCore.Sqlite
 - Microsoft.EntityFrameworkCore.Tools
 - FluentValidation
-- OpenTelemetry
+- FluentAssertion
 - Swashbuckle.AspNetCore
 
 ## Useful links
+- https://github.com/davidfowl/CommunityStandUpMinimalAPI
 - https://abdelmajid-baco.medium.com/cqrs-pattern-with-c-a9aff05aae3f
 - https://umayangag.medium.com/jwt-authentication-with-asp-net-core-3-1-identity-for-web-apis-fe36d4bb6630
