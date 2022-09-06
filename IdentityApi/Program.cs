@@ -1,18 +1,18 @@
-using System.Text;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using FluentValidation.Results;
 using IdentityApi.Infrastructure;
 using IdentityApi.Models;
 using IdentityApi.Validators;
+using IdentityApi.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Users") ?? "Data Source=identity.db";
+var endpointHelper = new EndpointHelper();
+var signingKey = endpointHelper.CreateSigningKey(builder.Configuration["SecurityKey"]);
 
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 _ = builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
@@ -26,13 +26,13 @@ _ = builder.Services.Configure<IdentityOptions>(options =>
     options.User.RequireUniqueEmail = true;
     options.Password.RequireDigit = true;
     options.Lockout.MaxFailedAccessAttempts = 3;
-})
-.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+}).AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
     {
         ValidAudience = builder.Configuration["Audience"],
-        ValidIssuer = builder.Configuration["Issuer"]
+        ValidIssuer = builder.Configuration["Issuer"],
+        IssuerSigningKey = signingKey,
     };
 });
 
@@ -57,7 +57,7 @@ app.MapPost("/register", async ([FromBody] UserModel model, UserManager<Identity
     if (!validationResult.IsValid)
     {
         var errors = validationResult.Errors;
-        return Results.BadRequest(CreateErrorMessage<ValidationFailure>(errors));
+        return Results.BadRequest(endpointHelper.CreateErrorMessage(errors));
     }
     var user = new IdentityUser()
     {
@@ -78,16 +78,13 @@ app.MapPost("/register", async ([FromBody] UserModel model, UserManager<Identity
 }).WithName("Register").Produces(StatusCodes.Status200OK).Produces(StatusCodes.Status400BadRequest).ProducesProblem(500);
 
 // Login endpoint.
-app.MapGet("/login", async (
-    [FromBody] UserModel model,
-    UserManager<IdentityUser> userManager,
-    SignInManager<IdentityUser> signInManager) => {
+app.MapGet("/login", async ([FromBody] UserModel model, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager) => {
     var validator = new UserModelValidator();
     var validationResult = validator.Validate(model);
     if (!validationResult.IsValid)
     {
         var errors = validationResult.Errors;
-        return Results.BadRequest(CreateErrorMessage<ValidationFailure>(errors));
+        return Results.BadRequest(endpointHelper.CreateErrorMessage(errors));
     }
     var signInResult = await signInManager.PasswordSignInAsync(model.UserName, model.Password, true, false);
     if (!signInResult.Succeeded)
@@ -99,27 +96,15 @@ app.MapGet("/login", async (
     var claims = new List<Claim>
     {
         new Claim(ClaimTypes.Email, user.Email),
-        new Claim(ClaimTypes.Name, user.UserName)
+        new Claim(ClaimTypes.Name, user.UserName),
+        new Claim("UserId", user.Id)
     };
     foreach (var role in roles)
     {
         claims.Add(new Claim(ClaimTypes.Role, role));
     }
+    var credentials = endpointHelper.CreateSigningCredentials(signingKey);
     return Results.Ok(); // TODO: return JWT token.
 }).WithName("Login").Produces(StatusCodes.Status200OK).Produces(StatusCodes.Status400BadRequest).ProducesProblem(500);
 
 app.Run();
-
-/// <summary>
-/// Method for creating an error message.
-/// </summary>
-/// <param name="errors">A collection of errors.</param>
-string CreateErrorMessage<T>(IEnumerable<T>? errors)
-{
-    if (errors == null)
-    {
-        return "";
-    }
-    var stringBuilder = new StringBuilder().AppendJoin("\n", errors);
-    return stringBuilder.ToString();
-}
