@@ -99,12 +99,10 @@ app.MapGet("/login", async ([FromBody] UserModel model, UserManager<IdentityUser
         new Claim(ClaimTypes.Name, user.UserName),
         new Claim("UserId", user.Id)
     };
-    foreach (var role in roles)
-    {
-        claims.Add(new Claim(ClaimTypes.Role, role));
-    }
-    var credentials = endpointHelper.CreateSigningCredentials(signingKey);
-    return Results.Ok(); // TODO: return JWT token.
+    foreach (var role in roles) claims.Add(new Claim(ClaimTypes.Role, role));
+    return Results.Ok(
+        endpointHelper.CreateJwtToken(builder.Configuration["Issuer"], builder.Configuration["Audience"], claims, signingKey)
+    );
 }).WithName("Login").Produces(StatusCodes.Status200OK).Produces(StatusCodes.Status400BadRequest).ProducesProblem(500);
 
 app.Run();

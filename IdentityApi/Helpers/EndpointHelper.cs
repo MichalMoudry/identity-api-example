@@ -1,6 +1,8 @@
 namespace IdentityApi.Helpers;
 
 using System.Text;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 
 /// <summary>
@@ -32,10 +34,27 @@ public class EndpointHelper
     }
 
     /// <summary>
+    /// Method for creating JWT token.
+    /// </summary>
+    /// <param name="issuer">JWT token issuer.</param>
+    /// <param name="audience">JWT token audience.</param>
+    /// <param name="claims">User's claims.</param>
+    /// <param name="signingKey">Symmetric sercurity key for signing the JWT token.</param>
+    /// <returns>JWT token as a string.</returns>
+    public string CreateJwtToken(string issuer, string audience, IEnumerable<Claim> claims, SymmetricSecurityKey signingKey)
+    {
+        var signingCredentials = CreateSigningCredentials(signingKey);
+        var token = new JwtSecurityToken(
+            issuer, audience, claims, expires: DateTime.Now.AddDays(1), signingCredentials: signingCredentials
+        );
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    /// <summary>
     /// Method for creating a new signing credentials.
     /// </summary>
     /// <param name="signingKey">Security key.</param>
-    public SigningCredentials CreateSigningCredentials(SymmetricSecurityKey signingKey)
+    private SigningCredentials CreateSigningCredentials(SymmetricSecurityKey signingKey)
     {
         return new SigningCredentials(
             signingKey,
