@@ -1,17 +1,25 @@
-[![Tests](https://github.com/MichalMoudry/identity-microservice-example/actions/workflows/dotnet_test.yaml/badge.svg)](https://github.com/MichalMoudry/identity-microservice-example/actions/workflows/dotnet_test.yaml)
-[![CodeQL](https://github.com/MichalMoudry/identity-microservice-example/actions/workflows/codeql.yml/badge.svg)](https://github.com/MichalMoudry/identity-microservice-example/actions/workflows/codeql.yml)
+[![Tests](https://github.com/MichalMoudry/identity-api-example/actions/workflows/dotnet_test.yaml/badge.svg)](https://github.com/MichalMoudry/identity-api-example/actions/workflows/dotnet_test.yaml)
+[![CodeQL](https://github.com/MichalMoudry/identity-api-example/actions/workflows/codeql.yml/badge.svg)](https://github.com/MichalMoudry/identity-api-example/actions/workflows/codeql.yml)
+[![Publish Docker image](https://github.com/MichalMoudry/identity-api-example/actions/workflows/docker_push.yaml/badge.svg)](https://github.com/MichalMoudry/identity-api-example/actions/workflows/docker_push.yaml)
 
 # Identity microservice example
-Repository with an example of an identity microservice.
+Repository with an example of an identity API application, using minimal APIs structure.
 
 ## Solution structure
 - Infrastructure
+    - Database context and possible repositories.
 - Models
+- Helpers
+- Extensions
 - Validators
+    - Validators for model or other classes.
 - Migrations
+    - EF Core database migrations.
+- Tests
 
 ## Used packages
 - Microsoft.AspNetCore.Identity.EntityFrameworkCore
+- Microsoft.AspNetCore.Authentication.JwtBearer
 - Microsoft.EntityFrameworkCore.Sqlite
 - Microsoft.EntityFrameworkCore.Tools
 - FluentValidation
