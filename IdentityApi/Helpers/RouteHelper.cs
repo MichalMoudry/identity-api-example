@@ -8,7 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 /// <summary>
 /// Helper class for Identity API endpoints.
 /// </summary>
-public class EndpointHelper
+public class RouteHelper
 {
     /// <summary>
     /// Method for creating an error message.

@@ -6,10 +6,11 @@ using IdentityApi.Infrastructure;
 using IdentityApi.Models;
 using IdentityApi.Validators;
 using IdentityApi.Helpers;
+using IdentityApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Users") ?? "Data Source=identity.db";
-var endpointHelper = new EndpointHelper();
+var endpointHelper = new RouteHelper();
 var signingKey = endpointHelper.CreateSigningKey(builder.Configuration["SecurityKey"]);
 
 // Add services to the container.
@@ -49,7 +50,7 @@ if (!app.Environment.IsDevelopment())
     _ = app.UseHttpsRedirection().UseHsts();
 }
 
-// Register endpoint.
+// Register route.
 app.MapPost("/register", async ([FromBody] UserModel model, UserManager<IdentityUser> userManager) =>
 {
     var validator = new UserModelValidator();
@@ -75,10 +76,10 @@ app.MapPost("/register", async ([FromBody] UserModel model, UserManager<Identity
         return Results.Problem();
     }
     return Results.Ok("User registered.");
-}).WithName("Register").Produces(StatusCodes.Status200OK).Produces(StatusCodes.Status400BadRequest).ProducesProblem(500);
+}).WithName("Register").AddDefaultStatusCodes();
 
-// Login endpoint.
-app.MapGet("/login", async ([FromBody] UserModel model, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager) => {
+// Login route.
+app.MapPost("/login", async ([FromBody] UserModel model, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager) => {
     var validator = new UserModelValidator();
     var validationResult = validator.Validate(model);
     if (!validationResult.IsValid)
@@ -103,6 +104,6 @@ app.MapGet("/login", async ([FromBody] UserModel model, UserManager<IdentityUser
     return Results.Ok(
         endpointHelper.CreateJwtToken(builder.Configuration["Issuer"], builder.Configuration["Audience"], claims, signingKey)
     );
-}).WithName("Login").Produces(StatusCodes.Status200OK).Produces(StatusCodes.Status400BadRequest).ProducesProblem(500);
+}).WithName("Login").AddDefaultStatusCodes();
 
 app.Run();
