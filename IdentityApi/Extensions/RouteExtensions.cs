@@ -10,9 +10,10 @@ public static class RouteExtensions
     /// </summary>
     public static RouteHandlerBuilder AddDefaultStatusCodes(this RouteHandlerBuilder builder)
     {
-        _ = builder
+        builder
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
+            .Produces(StatusCodes.Status405MethodNotAllowed)
             .ProducesProblem(500);
         return builder;
     }

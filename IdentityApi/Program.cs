@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using IdentityApi.Infrastructure;
 using IdentityApi.Models;
 using IdentityApi.Validators;
@@ -14,7 +15,7 @@ var endpointHelper = new RouteHelper();
 var signingKey = endpointHelper.CreateSigningKey(builder.Configuration["SecurityKey"]);
 
 // Add services to the container.
-_ = builder.Services
+builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
     .AddSqlite<ApiDbContext>(connectionString)
@@ -22,7 +23,7 @@ _ = builder.Services
     .AddEntityFrameworkStores<ApiDbContext>();
 
 // Indentity options config and JWT.
-_ = builder.Services.Configure<IdentityOptions>(options =>
+builder.Services.Configure<IdentityOptions>(options =>
 {
     options.User.RequireUniqueEmail = true;
     options.Password.RequireDigit = true;
@@ -39,15 +40,21 @@ _ = builder.Services.Configure<IdentityOptions>(options =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApiDbContext>();
+    dbContext.Database.Migrate();
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    _ = app.UseSwagger().UseSwaggerUI();
+    app.UseSwagger().UseSwaggerUI();
 }
 
 if (!app.Environment.IsDevelopment())
 {
-    _ = app.UseHttpsRedirection().UseHsts();
+    app.UseHttpsRedirection().UseHsts();
 }
 
 // Register route.
