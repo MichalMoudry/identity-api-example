@@ -54,7 +54,7 @@ if (app.Environment.IsDevelopment())
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseHttpsRedirection().UseHsts();
+    app.UseHsts();
 }
 
 // Register route.
