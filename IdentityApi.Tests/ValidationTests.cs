@@ -6,7 +6,7 @@ using IdentityApi.Models;
 /// <summary>
 /// Class containing methods for testing validations.
 /// </summary>
-public class ValidationTests
+public sealed class ValidationTests
 {
     /// <summary>
     /// Test method for testing user model validation.

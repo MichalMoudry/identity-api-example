@@ -8,7 +8,7 @@ using IdentityApi.Helpers;
 /// <summary>
 /// Class containing methods for testing <seealso cref="RouteHelper" />.
 /// </summary>
-public class RouteHelperTests
+public sealed class RouteHelperTests
 {
     private readonly RouteHelper _routeHelper;
 
