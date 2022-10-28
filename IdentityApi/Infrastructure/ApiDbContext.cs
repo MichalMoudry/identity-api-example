@@ -10,8 +10,8 @@ public class ApiDbContext : IdentityDbContext
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        _ = builder.Entity<IdentityRole>().HasData(new IdentityRole() { Name = "user", NormalizedName = "USER" });
-        _ = builder.Entity<IdentityRole>().HasData(new IdentityRole() { Name = "admin", NormalizedName = "ADMIN" });
+        builder.Entity<IdentityRole>().HasData(new IdentityRole() { Name = "user", NormalizedName = "USER" });
+        builder.Entity<IdentityRole>().HasData(new IdentityRole() { Name = "admin", NormalizedName = "ADMIN" });
         base.OnModelCreating(builder);
     }
 }

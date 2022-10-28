@@ -13,7 +13,7 @@ namespace IdentityApi.IntegrationTests;
 
 public sealed class ApiTests
 {
-    [Fact]
+    [Fact, Trait("Category", "IntegrationTest")]
     public void Test1()
     {
 
@@ -22,5 +22,15 @@ public sealed class ApiTests
 
 internal sealed class IdentityApi : WebApplicationFactory<Program>
 {
-    
+    protected override IHost CreateHost(IHostBuilder builder)
+    {
+        var root = new InMemoryDatabaseRoot();
+
+        builder.ConfigureServices(services =>
+        {
+            
+        });
+
+        return base.CreateHost(builder);
+    }
 }

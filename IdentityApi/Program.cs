@@ -10,7 +10,6 @@ using IdentityApi.Helpers;
 using IdentityApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("Users") ?? "Data Source=identity.db";
 var endpointHelper = new RouteHelper();
 var signingKey = endpointHelper.CreateSigningKey(builder.Configuration["SecurityKey"]);
 
@@ -18,11 +17,11 @@ var signingKey = endpointHelper.CreateSigningKey(builder.Configuration["Security
 builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
-    .AddSqlite<ApiDbContext>(connectionString)
+    .AddDbContext<ApiDbContext>(options => options.UseSqlServer(builder.Configuration["ConnectionString"]))
     .AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApiDbContext>();
 
-// Indentity options config and JWT.
+// Identity options config and JWT.
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.User.RequireUniqueEmail = true;
