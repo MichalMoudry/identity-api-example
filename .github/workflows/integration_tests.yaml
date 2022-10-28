@@ -1,8 +1,7 @@
-name: Unit tests
+name: Integration tests
 
 on:
-  push:
-    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -20,4 +19,4 @@ jobs:
     - name: Build
       run: dotnet build ./IdentityApi/IdentityApi.sln --no-restore
     - name: Test
-      run: dotnet test ./IdentityApi/IdentityApi.sln --filter Category=UnitTest --no-build --verbosity normal
+      run: dotnet test ./IdentityApi/IdentityApi.sln --filter Category=IntegrationTest --no-build --verbosity normal

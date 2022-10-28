@@ -8,6 +8,7 @@ open Xunit
 
 /// Method for testing user model validation.
 [<Fact>]
+[<Trait("Category", "UnitTest")>]
 let UserModelValidation () =
     let validator = new UserModelValidator()
     let testData = new Dictionary<UserModel, bool>();

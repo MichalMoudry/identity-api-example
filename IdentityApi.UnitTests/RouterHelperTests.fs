@@ -12,14 +12,16 @@ let routeHelper = new RouteHelper()
 
 /// Test for CreateErrorMessage() method.
 [<Fact>]
+[<Trait("Category", "UnitTest")>]
 let TestCreateErrorMessage () =
     let errors = ["Test"; ""; "Test message"]
     routeHelper.CreateErrorMessage(errors) |> Equal("Test\n\nTest message")
 
 /// Method for testing successful validation of a correct JWT token.
 [<Fact>]
+[<Trait("Category", "UnitTest")>]
 let TestCreateJwtToken () =
-    let key = routeHelper.CreateSigningKey("--I3Q5TTGQW!ETG:W!L4(!2::4Q..11111skgpw)))-)ù-§§")
+    let key = routeHelper.CreateSigningKey("--I3Q5TTGQW!ETG:W!L4(!2::4Q..11111skgpw)))-)ï¿½-ï¿½ï¿½")
     let token = routeHelper.CreateJwtToken("test_issuer", "test_audience", [new Claim("id", "idvalue")], key)
     let tokenHandler = new JwtSecurityTokenHandler()
     let validationParameters = new TokenValidationParameters(
