@@ -18,4 +18,4 @@ let UserModelValidation () =
     testData.Add(new UserModel(UserName = "test4", Email = "test4@test.com", Password = ""), false)
     testData.Add(new UserModel(UserName = "t5", Email = "test5@test.com", Password = "1"), false)
     for item in testData do
-        validator.Validate(item.Key).IsValid |> Equal item.Value
+        validator.Validate(item.Key).IsValid |> equal item.Value

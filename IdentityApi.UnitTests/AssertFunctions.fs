@@ -2,9 +2,9 @@
 
 open Xunit
 
-let Equal (expected: 'a) (actual: 'a) =
+let equal (expected: 'a) (actual: 'a) =
     Assert.Equal<'a>(expected, actual)
 
-let NotNullOrEmpty (value: string) =
+let notNullOrEmpty (value: string) =
     Assert.NotNull(value)
     Assert.NotEqual<string>("", value)
