@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -8,6 +7,8 @@ using IdentityApi.Models;
 using IdentityApi.Validators;
 using IdentityApi.Helpers;
 using IdentityApi.Extensions;
+using IdentityApi.Infrastructure.Repositories.Api;
+using IdentityApi.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 var endpointHelper = new RouteHelper();
@@ -15,6 +16,7 @@ var signingKey = endpointHelper.CreateSigningKey(builder.Configuration["Security
 
 // Add services to the container.
 builder.Services
+    .AddScoped<IUserRepository, UserRepository>()
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
     .AddDbContext<ApiDbContext>(options => options.UseSqlServer(builder.Configuration["ConnectionString"]))
@@ -50,14 +52,13 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger().UseSwaggerUI();
 }
-
-if (!app.Environment.IsDevelopment())
+else
 {
     app.UseHsts();
 }
 
 // Register route.
-app.MapPost("/register", async ([FromBody] UserModel model, UserManager<IdentityUser> userManager) =>
+app.MapPost("/register", async ([FromBody] UserModel model, IUserRepository userRepository) =>
 {
     var validator = new UserModelValidator();
     var validationResult = validator.Validate(model);
@@ -66,17 +67,12 @@ app.MapPost("/register", async ([FromBody] UserModel model, UserManager<Identity
         var errors = validationResult.Errors;
         return Results.BadRequest(endpointHelper.CreateErrorMessage(errors));
     }
-    var user = new IdentityUser()
-    {
-        UserName = model.UserName,
-        Email = model.Email
-    };
-    var createResult = await userManager.CreateAsync(user, model.Password);
+    var (createResult, user) = await userRepository.CreateUserAsync(model.UserName, model.Email, model.Password);
     if (!createResult.Succeeded)
     {
         return Results.BadRequest();
     }
-    var addToRoleResult = await userManager.AddToRoleAsync(user, "user");
+    var addToRoleResult = await userRepository.AddUserToRolesAsync(user, "user");
     if (!addToRoleResult.Succeeded)
     {
         return Results.Problem();
@@ -85,7 +81,7 @@ app.MapPost("/register", async ([FromBody] UserModel model, UserManager<Identity
 }).WithName("Register").AddDefaultStatusCodes();
 
 // Login route.
-app.MapPost("/login", async ([FromBody] UserModel model, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager) => {
+app.MapPost("/login", async ([FromBody] UserModel model, IUserRepository userRepository, SignInManager<IdentityUser> signInManager) => {
     var validator = new UserModelValidator();
     var validationResult = validator.Validate(model);
     if (!validationResult.IsValid)
@@ -98,15 +94,8 @@ app.MapPost("/login", async ([FromBody] UserModel model, UserManager<IdentityUse
     {
         return Results.BadRequest();
     }
-    var user = await userManager.FindByEmailAsync(model.Email);
-    var roles = await userManager.GetRolesAsync(user);
-    var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.Email, user.Email),
-        new Claim(ClaimTypes.Name, user.UserName),
-        new Claim("UserId", user.Id)
-    };
-    foreach (var role in roles) claims.Add(new Claim(ClaimTypes.Role, role));
+    var (user, roles) = await userRepository.GetUserByEmailAsync(model.Email);
+    var claims = endpointHelper.CreateClaimsForDefaultUser(user.Id, user.Email, user.UserName, roles);
     return Results.Ok(
         endpointHelper.CreateJwtToken(builder.Configuration["Issuer"], builder.Configuration["Audience"], claims, signingKey)
     );

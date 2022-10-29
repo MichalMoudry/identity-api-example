@@ -3,7 +3,7 @@ namespace IdentityApi.Validators;
 using FluentValidation;
 using IdentityApi.Models;
 
-public class UserModelValidator : AbstractValidator<UserModel>
+public sealed class UserModelValidator : AbstractValidator<UserModel>
 {
     public UserModelValidator()
     {
