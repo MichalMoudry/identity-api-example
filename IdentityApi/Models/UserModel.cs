@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 /// <summary>
 /// A model class for user's login.
 /// </summary>
-public class UserModel
+public sealed class UserModel
 {
     [Required, MinLength(length: 3)]
     public string? UserName { get; set; }

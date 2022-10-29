@@ -8,7 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 /// <summary>
 /// Helper class for Identity API endpoints.
 /// </summary>
-public class RouteHelper
+public sealed class RouteHelper
 {
     /// <summary>
     /// Method for creating an error message.
@@ -45,9 +45,32 @@ public class RouteHelper
     {
         var signingCredentials = CreateSigningCredentials(signingKey);
         var token = new JwtSecurityToken(
-            issuer, audience, claims, expires: DateTime.Now.AddDays(1).Date, signingCredentials: signingCredentials
+            issuer, audience, claims, expires: DateTime.Now.AddDays(2).Date, signingCredentials: signingCredentials
         );
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    /// <summary>
+    /// Method for creating list of claims for a default user.
+    /// </summary>
+    /// <param name="id">User's primary key.</param>
+    /// <param name="email">User's email address.</param>
+    /// <param name="userName">User's name.</param>
+    /// <param name="roles">A collection of user's roles.</param>
+    /// <returns>List of claims for a default user.</returns>
+    public List<Claim> CreateClaimsForDefaultUser(string id, string email, string userName, IEnumerable<string>? roles)
+    {
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Email, email),
+            new Claim(ClaimTypes.Name, userName),
+            new Claim("UserId", id)
+        };
+        if (roles != null)
+        {
+            foreach (var role in roles) claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+        return claims;
     }
 
     /// <summary>

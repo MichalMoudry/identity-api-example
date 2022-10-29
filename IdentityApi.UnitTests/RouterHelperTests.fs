@@ -30,3 +30,16 @@ let TestCreateJwtToken () =
     token |> notNullOrEmpty
     let (_, validatedToken) = tokenHandler.ValidateToken(token, validationParameters)
     validatedToken.ValidTo.Date |> equal (DateTime.Now.AddDays(1).Date)
+
+/// Method for testing creation of claims for a default user.
+[<Fact>]
+[<Trait("Category", "UnitTest")>]
+let TestCreateClaimsForDefaultUser () =
+    let claims =
+        routeHelper.CreateClaimsForDefaultUser("id", "user@user.com", "userName", ["userRole"])
+        |> Seq.map (fun i -> i.Type, i.Value)
+        |> dict
+    claims["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"] |> equal "user@user.com"
+    claims["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] |> equal "userName"
+    claims["UserId"] |> equal "id"
+    claims["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] |> equal "userRole"
