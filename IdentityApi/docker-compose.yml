@@ -3,7 +3,9 @@ services:
     web:
         build: .
         ports:
-            - "443:443"
+            - "8443:443"
+        environment:
+            CONNECTION_STRING: "Server=db;Database=master;User=sa;Password=Your_password123;"
         depends_on:
             - db
     db:

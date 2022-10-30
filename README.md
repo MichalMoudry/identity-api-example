@@ -32,6 +32,7 @@ Repository with an example of an identity API application, using minimal APIs st
 - https://github.com/davidfowl/CommunityStandUpMinimalAPI
 - https://abdelmajid-baco.medium.com/cqrs-pattern-with-c-a9aff05aae3f
 - https://umayangag.medium.com/jwt-authentication-with-asp-net-core-3-1-identity-for-web-apis-fe36d4bb6630
+- https://medium.com/front-end-weekly/net-core-web-api-with-docker-compose-postgresql-and-ef-core-21f47351224f
 
 ## How to run
 - **Docker run command**: docker run -d -p 443:443 --name [container_name] [container_image]

@@ -1,3 +1,5 @@
 Dockerfile
 [b|B]in
 [O|o]bj
+bin/
+obj/

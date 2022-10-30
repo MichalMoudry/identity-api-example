@@ -1,8 +1,20 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0
-COPY . /app
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
 WORKDIR /app
-RUN ["dotnet", "restore"]
-RUN ["dotnet", "build"]
-EXPOSE 443/tcp
-RUN chmod +x ./entrypoint.sh
-CMD /bin/bash ./entrypoint.sh
+
+# Copy csproj and restore as distinct layers
+COPY IdentityApi.csproj ./
+RUN dotnet restore
+
+# Copy everything else and build
+COPY . .
+RUN dotnet publish IdentityApi.csproj -c Release -o out
+
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
+WORKDIR /app
+COPY --from=build-env /app/out .
+COPY ./entrypoint.sh .
+
+RUN ["chmod", "+x", "./entrypoint.sh"]
+ENTRYPOINT [ "./entrypoint.sh" ]
+CMD [ "/bin/bash", "./entrypoint.sh" ]

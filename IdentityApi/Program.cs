@@ -14,12 +14,21 @@ var builder = WebApplication.CreateBuilder(args);
 var endpointHelper = new RouteHelper();
 var signingKey = endpointHelper.CreateSigningKey(builder.Configuration["SecurityKey"]);
 
+var connectionString = builder.Environment.IsDevelopment()
+    ? builder.Configuration["ConnectionString"]
+    : Environment.GetEnvironmentVariable("CONNECTION_STRING");
+
+if (connectionString == null)
+{
+    throw new NullReferenceException("Connection string to DB is null.");
+}
+
 // Add services to the container.
 builder.Services
     .AddScoped<IUserRepository, UserRepository>()
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
-    .AddDbContext<ApiDbContext>(options => options.UseSqlServer(builder.Configuration["ConnectionString"]))
+    .AddDbContext<ApiDbContext>(options => options.UseSqlServer(connectionString))
     .AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApiDbContext>();
 
