@@ -40,13 +40,6 @@ builder.Services.Configure<IdentityOptions>(options =>
 });
 
 var app = builder.Build();
-
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<ApiDbContext>();
-    dbContext.Database.Migrate();
-}
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -55,6 +48,7 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseHsts();
+    app.UseHttpsRedirection();
 }
 
 // Register route.

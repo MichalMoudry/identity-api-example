@@ -1,11 +1,8 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-WORKDIR /src
-COPY IdentityApi.csproj .
-RUN dotnet restore
-COPY . .
-RUN dotnet publish IdentityApi.csproj -c release -o /app
-
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+FROM mcr.microsoft.com/dotnet/sdk:6.0
+COPY . /app
 WORKDIR /app
-COPY --from=build /app .
-ENTRYPOINT [ "dotnet", "IdentityApi.dll" ]
+RUN ["dotnet", "restore"]
+RUN ["dotnet", "build"]
+EXPOSE 443/tcp
+RUN chmod +x ./entrypoint.sh
+CMD /bin/bash ./entrypoint.sh

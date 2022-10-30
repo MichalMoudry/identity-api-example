@@ -45,7 +45,7 @@ public sealed class RouteHelper
     {
         var signingCredentials = CreateSigningCredentials(signingKey);
         var token = new JwtSecurityToken(
-            issuer, audience, claims, expires: DateTime.Now.AddDays(2).Date, signingCredentials: signingCredentials
+            issuer, audience, claims, expires: DateTime.Now.AddDays(1).Date, signingCredentials: signingCredentials
         );
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
