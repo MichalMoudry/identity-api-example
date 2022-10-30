@@ -1,4 +1,4 @@
-module RouterHelperTests
+module RouteHelperTests
 
 open AssertFunctions
 open System

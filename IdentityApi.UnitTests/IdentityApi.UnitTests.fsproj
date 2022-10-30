@@ -10,8 +10,7 @@
   <ItemGroup>
 	<Compile Include="AssertFunctions.fs" />
     <Compile Include="ValidationTests.fs" />
-    
-    <Compile Include="RouterHelperTests.fs" />
+    <Compile Include="RouteHelperTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
