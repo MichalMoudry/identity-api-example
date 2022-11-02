@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using IdentityApi.Infrastructure;
 using IdentityApi.Models;
-using IdentityApi.Validators;
 using IdentityApi.Helpers;
 using IdentityApi.Extensions;
 using IdentityApi.Infrastructure.Repositories.Api;
@@ -27,7 +26,9 @@ if (connectionString == null)
 builder.Services
     .AddScoped<IUserRepository, UserRepository>()
     .AddEndpointsApiExplorer()
-    .AddSwaggerGen()
+    .AddSwaggerGen(g => {
+        g.SwaggerDoc("v1", new() { Title = builder.Environment.ApplicationName, Version = "v1" });
+    })
     .AddDbContext<ApiDbContext>(options => options.UseSqlServer(connectionString))
     .AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApiDbContext>();
@@ -63,8 +64,7 @@ else
 // Register route.
 app.MapPost("/register", async ([FromBody] UserModel model, IUserRepository userRepository) =>
 {
-    var validator = new UserModelValidator();
-    var validationResult = validator.Validate(model);
+    var validationResult = model.Validate();
     if (!validationResult.IsValid)
     {
         var errors = validationResult.Errors;
@@ -85,8 +85,7 @@ app.MapPost("/register", async ([FromBody] UserModel model, IUserRepository user
 
 // Login route.
 app.MapPost("/login", async ([FromBody] UserModel model, IUserRepository userRepository, SignInManager<IdentityUser> signInManager) => {
-    var validator = new UserModelValidator();
-    var validationResult = validator.Validate(model);
+    var validationResult = model.Validate();
     if (!validationResult.IsValid)
     {
         var errors = validationResult.Errors;
@@ -105,12 +104,16 @@ app.MapPost("/login", async ([FromBody] UserModel model, IUserRepository userRep
 }).WithName("Login").AddDefaultStatusCodes();
 
 // Edit account route.
-app.MapPost("/edit", () => {
+app.MapPut("/edit/{id}", (IUserRepository userRepository, string id) => {
 
 }).WithName("Edit account").AddDefaultStatusCodes();
 
 // Reset password account route.
-app.MapPost("/resetpassword", () => {
+app.MapPut("/resetpassword/{id}", (IUserRepository userRepository, string id) => {
+
+}).WithName("Reset password").AddDefaultStatusCodes();
+
+app.MapDelete("/delete/{id}", (IUserRepository userRepository, string id) => {
 
 }).WithName("Reset password").AddDefaultStatusCodes();
 

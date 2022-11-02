@@ -39,9 +39,12 @@ public sealed class ApiTests
         var client = identityApi.CreateClient();
         var payload = new UserModel()
         {
-
+            Email = "test@test.com",
+            UserName = "test_user",
+            Password = "Password1"
         };
         var response = await client.PostAsJsonAsync<UserModel>("/register", payload);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     /// <summary>
