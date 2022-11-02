@@ -8,15 +8,20 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Xunit;
+using IdentityApi.Infrastructure;
 
 namespace IdentityApi.IntegrationTests;
 
 public sealed class ApiTests
 {
+    /// <summary>
+    /// Method for testing login API endpoint.
+    /// </summary>
     [Fact, Trait("Category", "IntegrationTest")]
-    public void Test1()
+    public async Task TestLogin()
     {
-
+        await using var identityApi = new IdentityApi();
+        var client = identityApi.CreateClient();
     }
 }
 
@@ -28,7 +33,9 @@ internal sealed class IdentityApi : WebApplicationFactory<Program>
 
         builder.ConfigureServices(services =>
         {
-            
+            services.RemoveAll(typeof(DbContextOptions<ApiDbContext>));
+            services.AddDbContext<ApiDbContext>(options =>
+                options.UseInMemoryDatabase("TestDb", root));
         });
 
         return base.CreateHost(builder);
