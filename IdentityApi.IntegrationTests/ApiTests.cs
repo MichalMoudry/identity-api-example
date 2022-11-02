@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using IdentityApi.Infrastructure;
 using IdentityApi.Models;
 
@@ -24,9 +23,16 @@ public sealed class ApiTests
         var client = identityApi.CreateClient();
         var payload = new UserModel()
         {
-
+            Email = "test@test.com",
+            UserName = "test_user",
+            Password = "Password1."
         };
-        var response = await client.PostAsJsonAsync<UserModel>("", payload);
+        using (var scope = identityApi.Services.CreateScope())
+        {
+            CreateDb(scope);
+        }
+        var response = await client.PostAsJsonAsync<UserModel>("/login", payload);
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
     /// <summary>
@@ -41,8 +47,12 @@ public sealed class ApiTests
         {
             Email = "test@test.com",
             UserName = "test_user",
-            Password = "Password1"
+            Password = "Password1."
         };
+        using (var scope = identityApi.Services.CreateScope())
+        {
+            CreateDb(scope);
+        }
         var response = await client.PostAsJsonAsync<UserModel>("/register", payload);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
@@ -65,6 +75,16 @@ public sealed class ApiTests
     {
         await using var identityApi = new IdentityApi();
         var client = identityApi.CreateClient();
+    }
+
+    private void CreateDb(IServiceScope? serviceScope)
+    {
+        if (serviceScope == null)
+        {
+            throw new ArgumentNullException("Service scope is null during DB creation.", nameof(serviceScope));
+        }
+        var context = serviceScope.ServiceProvider.GetRequiredService<ApiDbContext>();
+        context.Database.EnsureCreated();
     }
 }
 
