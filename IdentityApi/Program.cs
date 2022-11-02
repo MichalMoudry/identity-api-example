@@ -104,4 +104,14 @@ app.MapPost("/login", async ([FromBody] UserModel model, IUserRepository userRep
     );
 }).WithName("Login").AddDefaultStatusCodes();
 
+// Edit account route.
+app.MapPost("/edit", () => {
+
+}).WithName("Edit account").AddDefaultStatusCodes();
+
+// Reset password account route.
+app.MapPost("/resetpassword", () => {
+
+}).WithName("Reset password").AddDefaultStatusCodes();
+
 app.Run();
