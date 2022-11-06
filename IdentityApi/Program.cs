@@ -108,12 +108,13 @@ app.MapPut("/edit/{id}", (IUserRepository userRepository, string id) => {
 
 }).WithName("Edit account").AddDefaultStatusCodes();
 
+// Delete account route.
+app.MapDelete("/delete/{id}", (IUserRepository userRepository, string id) => {
+
+}).WithName("Delete account").AddDefaultStatusCodes();
+
 // Reset password account route.
 app.MapPut("/resetpassword/{id}", (IUserRepository userRepository, string id) => {
-
-}).WithName("Reset password").AddDefaultStatusCodes();
-
-app.MapDelete("/delete/{id}", (IUserRepository userRepository, string id) => {
 
 }).WithName("Reset password").AddDefaultStatusCodes();
 

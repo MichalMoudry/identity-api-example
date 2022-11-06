@@ -15,7 +15,7 @@ public sealed class UserModel : IValidatedModel
     [Required, EmailAddress]
     public string? Email { get; set; }
 
-    [Required, MinLength(length: 7)]
+    [Required, MinLength(length: 7), DataType(DataType.Password)]
     public string? Password { get; set; }
 
     public FluentValidation.Results.ValidationResult Validate()
