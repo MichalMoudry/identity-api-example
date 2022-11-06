@@ -1,4 +1,3 @@
-using IdentityApi.Infrastructure.Repositories.Api;
 using Microsoft.AspNetCore.Identity;
 
 namespace IdentityApi.Infrastructure.Repositories;

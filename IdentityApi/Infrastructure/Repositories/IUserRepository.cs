@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace IdentityApi.Infrastructure.Repositories.Api;
+namespace IdentityApi.Infrastructure.Repositories;
 
 /// <summary>
 /// Interface for a user repository.
@@ -30,4 +30,6 @@ public interface IUserRepository
     /// <param name="email">User's email.</param>
     /// <returns>User data (including roles).</returns>
     public Task<(IdentityUser, IList<string>?)> GetUserByEmailAsync(string? email);
+
+    //public Task<bool> DeleteUser(string? id);
 }

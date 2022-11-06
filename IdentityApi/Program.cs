@@ -6,12 +6,19 @@ using IdentityApi.Infrastructure;
 using IdentityApi.Models;
 using IdentityApi.Helpers;
 using IdentityApi.Extensions;
-using IdentityApi.Infrastructure.Repositories.Api;
 using IdentityApi.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 var endpointHelper = new RouteHelper();
-var signingKey = endpointHelper.CreateSigningKey(builder.Configuration["SecurityKey"]);
+
+var securityKey = builder.Environment.IsDevelopment()
+    ? builder.Configuration["SecurityKey"]
+    : Environment.GetEnvironmentVariable("SECURITY_KEY");
+if (securityKey == null)
+{
+    throw new NullReferenceException("Security key is null.");
+}
+var signingKey = endpointHelper.CreateSigningKey(securityKey);
 
 var connectionString = builder.Environment.IsDevelopment()
     ? builder.Configuration["ConnectionString"]
@@ -26,9 +33,7 @@ if (connectionString == null)
 builder.Services
     .AddScoped<IUserRepository, UserRepository>()
     .AddEndpointsApiExplorer()
-    .AddSwaggerGen(g => {
-        g.SwaggerDoc("v1", new() { Title = builder.Environment.ApplicationName, Version = "v1" });
-    })
+    .AddSwaggerGen()
     .AddDbContext<ApiDbContext>(options => options.UseSqlServer(connectionString))
     .AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApiDbContext>();
@@ -109,8 +114,8 @@ app.MapPut("/edit/{id}", (IUserRepository userRepository, string id) => {
 }).WithName("Edit account").AddDefaultStatusCodes();
 
 // Delete account route.
-app.MapDelete("/delete/{id}", (IUserRepository userRepository, string id) => {
-
+app.MapDelete("/delete/{id}", ([FromBody] DeleteUserModel model, IUserRepository userRepository, string id) => {
+    
 }).WithName("Delete account").AddDefaultStatusCodes();
 
 // Reset password account route.
