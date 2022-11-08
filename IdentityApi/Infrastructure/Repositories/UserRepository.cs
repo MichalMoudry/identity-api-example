@@ -47,4 +47,22 @@ public sealed class UserRepository : IUserRepository
         var roles = await _userManager.GetRolesAsync(user);
         return (user, roles);
     }
+
+    /// <inheritdoc />
+    public async Task<IdentityResult> DeleteUser(string? email)
+    {
+        if (email == null)
+        {
+            throw new ArgumentNullException("Attempted to get user with null email.", nameof(email));
+        }
+        var user = await _userManager.FindByEmailAsync(email);
+        return await _userManager.DeleteAsync(user);
+    }
+
+    /// <inheritdoc />
+    public async Task<IdentityResult> ResetPassword(string? email, string? password)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        return await _userManager.ResetPasswordAsync(user, "?", password);
+    }
 }

@@ -21,12 +21,11 @@ public sealed class ApiTests
     {
         await using var identityApi = new IdentityApi();
         var client = identityApi.CreateClient();
-        var payload = new UserModel()
-        {
-            Email = "test@test.com",
-            UserName = "test_user",
-            Password = "Password1."
-        };
+        var payload = new UserModel(
+            "test@test.com",
+            "test_user",
+            "Password1."
+        );
         using (var scope = identityApi.Services.CreateScope())
         {
             CreateDb(scope);
@@ -43,12 +42,11 @@ public sealed class ApiTests
     {
         await using var identityApi = new IdentityApi();
         var client = identityApi.CreateClient();
-        var payload = new UserModel()
-        {
-            Email = "test@test.com",
-            UserName = "test_user",
-            Password = "Password1."
-        };
+        var payload = new UserModel(
+            "test@test.com",
+            "test_user",
+            "Password1."
+        );
         using (var scope = identityApi.Services.CreateScope())
         {
             CreateDb(scope);
