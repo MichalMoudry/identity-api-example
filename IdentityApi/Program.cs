@@ -44,7 +44,8 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.User.RequireUniqueEmail = true;
     options.Password.RequireDigit = true;
     options.Lockout.MaxFailedAccessAttempts = 3;
-}).AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+})
+.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
     {
@@ -86,7 +87,8 @@ app.MapPost("/register", async ([FromBody] UserModel model, IUserRepository user
         return Results.Problem();
     }
     return Results.Ok("User registered.");
-}).WithName("Register").AddDefaultStatusCodes();
+})
+.WithName("Register").AddDefaultStatusCodes();
 
 // Login route.
 app.MapPost("/login", async ([FromBody] UserModel model, IUserRepository userRepository, SignInManager<IdentityUser> signInManager) => {
@@ -106,21 +108,25 @@ app.MapPost("/login", async ([FromBody] UserModel model, IUserRepository userRep
     return Results.Ok(
         endpointHelper.CreateJwtToken(builder.Configuration["Issuer"], builder.Configuration["Audience"], claims, signingKey)
     );
-}).WithName("Login").AddDefaultStatusCodes();
+})
+.WithName("Login").AddDefaultStatusCodes();
 
 // Edit account route.
 app.MapPut("/edit/{id}", (IUserRepository userRepository, string id) => {
 
-}).WithName("Edit account").AddDefaultStatusCodes();
+})
+.WithName("Edit account").AddDefaultStatusCodes();
 
 // Delete account route.
 app.MapDelete("/delete/{id}", ([FromBody] DeleteUserModel model, IUserRepository userRepository, string id) => {
     
-}).WithName("Delete account").AddDefaultStatusCodes();
+})
+.WithName("Delete account").AddDefaultStatusCodes();
 
 // Reset password account route.
 app.MapPut("/resetpassword/{id}", (IUserRepository userRepository, string id) => {
 
-}).WithName("Reset password").AddDefaultStatusCodes();
+})
+.WithName("Reset password").AddDefaultStatusCodes();
 
 app.Run();
