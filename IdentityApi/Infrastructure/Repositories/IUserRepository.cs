@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace IdentityApi.Infrastructure.Repositories.Api;
+namespace IdentityApi.Infrastructure.Repositories;
 
 /// <summary>
 /// Interface for a user repository.
@@ -14,7 +14,7 @@ public interface IUserRepository
     /// <param name="email">User's email.</param>
     /// <param name="password">User's password.</param>
     /// <returns>Result of creating a new user operation.</returns>
-    public Task<(IdentityResult, IdentityUser)> CreateUserAsync(string? userName, string? email, string? password);
+    Task<(IdentityResult, IdentityUser)> CreateUserAsync(string? userName, string? email, string? password);
 
      /// <summary>
     /// Method for adding user to roles.
@@ -22,12 +22,27 @@ public interface IUserRepository
     /// <param name="user">An instance of <seealso cref="IdentityUser" /> class.</param>
     /// <param name="roleNames">Roles that will be added to a user.</param>
     /// <returns>Result of adding a user to a role.</returns>
-    Task<IdentityResult> AddUserToRolesAsync(IdentityUser? user, params string[] roleNames);
+    Task<IdentityResult> AddUserToRolesAsync(IdentityUser user, params string[] roleNames);
 
     /// <summary>
     /// Method for user data from the database.
     /// </summary>
     /// <param name="email">User's email.</param>
     /// <returns>User data (including roles).</returns>
-    public Task<(IdentityUser, IList<string>?)> GetUserByEmailAsync(string? email);
+    Task<(IdentityUser, IList<string>?)> GetUserByEmailAsync(string? email);
+
+    /// <summary>
+    /// Method for deleting a user from the database.
+    /// </summary>
+    /// <param name="email">User's email.</param>
+    /// <returns>Operation (deletion of a user) result.</returns>
+    Task<IdentityResult> DeleteUser(string? email);
+
+    /// <summary>
+    /// Method for reseting user's password.
+    /// </summary>
+    /// <param name="id">User's unique ID.</param>
+    /// <param name="password">User's new password.</param>
+    /// <returns>Operation (password reset) result.</returns>
+    Task<IdentityResult> ResetPassword(string? id, string? password);
 }

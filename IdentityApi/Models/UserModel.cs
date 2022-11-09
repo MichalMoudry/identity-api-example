@@ -7,17 +7,16 @@ using IdentityApi.Validators;
 /// <summary>
 /// A model class for user's login.
 /// </summary>
-public sealed class UserModel : IValidatedModel
-{
+public sealed record class UserModel(
     [Required, MinLength(length: 3)]
-    public string? UserName { get; set; }
-
+    string? UserName,
     [Required, EmailAddress]
-    public string? Email { get; set; }
-
+    string? Email,
     [Required, MinLength(length: 7), DataType(DataType.Password)]
-    public string? Password { get; set; }
-
+    string? Password
+) : IValidatedModel
+{
+    /// <inheritdoc />
     public FluentValidation.Results.ValidationResult Validate()
     {
         var validator = new UserModelValidator();
