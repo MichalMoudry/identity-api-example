@@ -49,20 +49,25 @@ public sealed class UserRepository : IUserRepository
     }
 
     /// <inheritdoc />
-    public async Task<IdentityResult> DeleteUser(string? email)
+    public async Task<IdentityResult> DeleteUser(string? id)
     {
-        if (email == null)
+        if (id == null)
         {
-            throw new ArgumentNullException("Attempted to get user with null email.", nameof(email));
+            throw new ArgumentNullException("Attempted to find user by null id.", nameof(id));
         }
-        var user = await _userManager.FindByEmailAsync(email);
+        var user = await _userManager.FindByIdAsync(id);
         return await _userManager.DeleteAsync(user);
     }
 
     /// <inheritdoc />
-    public async Task<IdentityResult> ResetPassword(string? email, string? password)
+    public async Task<IdentityResult> ResetPassword(string? id, string? password)
     {
-        var user = await _userManager.FindByEmailAsync(email);
-        return await _userManager.ResetPasswordAsync(user, "?", password);
+        if (id == null || password == null)
+        {
+            throw new ArgumentNullException();
+        }
+        var user = await _userManager.FindByIdAsync(id);
+        var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+        return await _userManager.ResetPasswordAsync(user, resetToken, password);
     }
 }

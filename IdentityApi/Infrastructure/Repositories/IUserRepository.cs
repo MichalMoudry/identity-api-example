@@ -37,4 +37,12 @@ public interface IUserRepository
     /// <param name="email">User's email.</param>
     /// <returns>Operation (deletion of a user) result.</returns>
     public Task<IdentityResult> DeleteUser(string? email);
+
+    /// <summary>
+    /// Method for reseting user's password.
+    /// </summary>
+    /// <param name="id">User's unique ID.</param>
+    /// <param name="password">User's new password.</param>
+    /// <returns>Operation (password reset) result.</returns>
+    public Task<IdentityResult> ResetPassword(string? id, string? password);
 }
