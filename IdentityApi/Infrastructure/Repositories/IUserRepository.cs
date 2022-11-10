@@ -32,6 +32,13 @@ public interface IUserRepository
     Task<(IdentityUser, IList<string>?)> GetUserByEmailAsync(string? email);
 
     /// <summary>
+    /// Method for user data from the database.
+    /// </summary>
+    /// <param name="email">User's ID.</param>
+    /// <returns>User data (including roles).</returns>
+    Task<(IdentityUser, IList<string>?)> GetUserById(string? id);
+
+    /// <summary>
     /// Method for deleting a user from the database.
     /// </summary>
     /// <param name="email">User's email.</param>

@@ -124,8 +124,8 @@ app.MapDelete("/delete/{id}", ([FromBody] DeleteUserModel model, IUserRepository
 .WithName("Delete account").AddDefaultStatusCodes();
 
 // Reset password account route.
-app.MapPut("/resetpassword/{id}", (IUserRepository userRepository, string id) => {
-
+app.MapPut("/resetpassword/{id}", async (IUserRepository userRepository, PasswordResetModel model) => {
+    // var resetResult = await userRepository.ResetPassword(model.Id, model.NewPassword);
 })
 .WithName("Reset password").AddDefaultStatusCodes();
 

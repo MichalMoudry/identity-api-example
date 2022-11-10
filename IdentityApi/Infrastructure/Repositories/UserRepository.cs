@@ -38,6 +38,14 @@ public sealed class UserRepository : IUserRepository
     }
 
     /// <inheritdoc />
+    public async Task<(IdentityUser, IList<string>?)> GetUserById(string? id)
+    {
+        var user = await _userManager.FindByEmailAsync(id);
+        var roles = await _userManager.GetRolesAsync(user);
+        return (user, roles);
+    }
+
+    /// <inheritdoc />
     public async Task<IdentityResult> UpdateUser(string? id, string? email, string? password)
     {
         var isEmailNullOrEmpty = string.IsNullOrEmpty(email);
