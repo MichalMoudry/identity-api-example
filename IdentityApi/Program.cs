@@ -42,8 +42,6 @@ builder.Services
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.User.RequireUniqueEmail = true;
-    options.Password.RequireDigit = true;
-    options.Lockout.MaxFailedAccessAttempts = 3;
 })
 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
@@ -54,6 +52,7 @@ builder.Services.Configure<IdentityOptions>(options =>
         IssuerSigningKey = signingKey,
     };
 });
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
@@ -125,7 +124,12 @@ app.MapDelete("/delete/{id}", ([FromBody] DeleteUserModel model, IUserRepository
 
 // Reset password account route.
 app.MapPut("/resetpassword/{id}", async (IUserRepository userRepository, PasswordResetModel model) => {
-    // var resetResult = await userRepository.ResetPassword(model.Id, model.NewPassword);
+    var resetResult = await userRepository.ResetPassword(model.Id, model.NewPassword);
+    if (!resetResult.Succeeded)
+    {
+        return Results.BadRequest();
+    }
+    return Results.Ok();
 })
 .WithName("Reset password").AddDefaultStatusCodes();
 

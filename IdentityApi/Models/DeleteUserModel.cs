@@ -9,5 +9,5 @@ public sealed record class DeleteUserModel(
     [Required, MinLength(length: 3)]
     string? UserName,
     [Required]
-    string? Password
+    string? NewPassword
 );

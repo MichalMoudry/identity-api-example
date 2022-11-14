@@ -1,4 +1,3 @@
-using Ardalis.GuardClauses;
 using Microsoft.AspNetCore.Identity;
 
 namespace IdentityApi.Infrastructure.Repositories;
