@@ -1,11 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using IdentityApi.Infrastructure;
 using IdentityApi.Models;
 
@@ -83,22 +78,5 @@ public sealed class ApiTests
         }
         var context = serviceScope.ServiceProvider.GetRequiredService<ApiDbContext>();
         context.Database.EnsureCreated();
-    }
-}
-
-internal sealed class IdentityApi : WebApplicationFactory<Program>
-{
-    protected override IHost CreateHost(IHostBuilder builder)
-    {
-        var root = new InMemoryDatabaseRoot();
-
-        builder.ConfigureServices(services =>
-        {
-            services.RemoveAll(typeof(DbContextOptions<ApiDbContext>));
-            services.AddDbContext<ApiDbContext>(options =>
-                options.UseInMemoryDatabase("TestDb", root));
-        });
-
-        return base.CreateHost(builder);
     }
 }
