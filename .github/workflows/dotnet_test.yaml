@@ -1,8 +1,6 @@
 name: Unit tests
 
-on:
-  push:
-    branches: [ "main" ]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -11,13 +9,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 6.0.x
+
     - name: Restore dependencies
       run: dotnet restore ./IdentityApi/IdentityApi.sln
+
     - name: Build
       run: dotnet build ./IdentityApi/IdentityApi.sln --no-restore
+
     - name: Test
       run: dotnet test ./IdentityApi/IdentityApi.sln --filter Category=UnitTest --no-build --verbosity normal
