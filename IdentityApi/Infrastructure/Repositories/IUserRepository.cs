@@ -25,14 +25,21 @@ public interface IUserRepository
     Task<IdentityResult> AddUserToRolesAsync(IdentityUser user, params string[] roleNames);
 
     /// <summary>
-    /// Method for user data from the database.
+    /// Method for obtaining user data from the database.
     /// </summary>
     /// <param name="email">User's email.</param>
     /// <returns>User data (including roles).</returns>
     Task<(IdentityUser, IList<string>?)> GetUserByEmailAsync(string? email);
 
     /// <summary>
-    /// Method for user data from the database.
+    /// Method for obtaining user data from the database.
+    /// </summary>
+    /// <param name="userName">User's name.</param>
+    /// <returns>User data (including roles).</returns>
+    Task<(IdentityUser, IList<string>?)> GetUserByUserName(string? userName);
+
+    /// <summary>
+    /// Method for obtaining user data from the database.
     /// </summary>
     /// <param name="email">User's ID.</param>
     /// <returns>User data (including roles).</returns>
@@ -49,7 +56,7 @@ public interface IUserRepository
     /// Method for reseting user's password.
     /// </summary>
     /// <param name="id">User's unique ID.</param>
-    /// <param name="password">User's new password.</param>
+    /// <param name="newPassword">User's new password.</param>
     /// <returns>Operation (password reset) result.</returns>
-    Task<IdentityResult> ResetPassword(string? id, string? password);
+    Task<IdentityResult> ResetPassword(string? id, string? newPassword);
 }

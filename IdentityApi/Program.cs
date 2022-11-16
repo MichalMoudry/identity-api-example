@@ -36,6 +36,7 @@ builder.Services
     .AddSwaggerGen()
     .AddDbContext<ApiDbContext>(options => options.UseSqlServer(connectionString))
     .AddIdentity<IdentityUser, IdentityRole>()
+    .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<ApiDbContext>();
 
 // Identity options config and JWT.
@@ -67,7 +68,7 @@ else
 }
 
 // Register route.
-app.MapPost("/register", async ([FromBody] UserModel model, IUserRepository userRepository) =>
+app.MapPost("/register", async ([FromBody] RegisterModel model, IUserRepository userRepository) =>
 {
     var validationResult = model.Validate();
     if (!validationResult.IsValid)
@@ -90,23 +91,19 @@ app.MapPost("/register", async ([FromBody] UserModel model, IUserRepository user
 .WithName("Register").AddDefaultStatusCodes();
 
 // Login route.
-app.MapPost("/login", async ([FromBody] UserModel model, IUserRepository userRepository, SignInManager<IdentityUser> signInManager) => {
-    var validationResult = model.Validate();
-    if (!validationResult.IsValid)
-    {
-        var errors = validationResult.Errors;
-        return Results.BadRequest(endpointHelper.CreateErrorMessage(errors));
-    }
+app.MapPost("/login", async ([FromBody] LoginModel model, IUserRepository userRepository, SignInManager<IdentityUser> signInManager) => {
     var signInResult = await signInManager.PasswordSignInAsync(model.UserName, model.Password, true, false);
     if (!signInResult.Succeeded)
     {
         return Results.BadRequest();
     }
-    var (user, roles) = await userRepository.GetUserByEmailAsync(model.Email);
+    var (user, roles) = await userRepository.GetUserByUserName(model.UserName);
     var claims = endpointHelper.CreateClaimsForDefaultUser(user.Id, user.Email, user.UserName, roles);
-    return Results.Ok(
-        endpointHelper.CreateJwtToken(builder.Configuration["Issuer"], builder.Configuration["Audience"], claims, signingKey)
-    );
+    return Results.Ok(new
+    {
+        User = user.Id,
+        Token = endpointHelper.CreateJwtToken(builder.Configuration["Issuer"], builder.Configuration["Audience"], claims, signingKey)
+    });
 })
 .WithName("Login").AddDefaultStatusCodes();
 
@@ -114,13 +111,13 @@ app.MapPost("/login", async ([FromBody] UserModel model, IUserRepository userRep
 app.MapPut("/edit/{id}", (IUserRepository userRepository, string id) => {
 
 })
-.WithName("Edit account").AddDefaultStatusCodes();
+.WithName("Edit account").RequireAuthorization().AddDefaultStatusCodes();
 
 // Delete account route.
-app.MapDelete("/delete/{id}", ([FromBody] DeleteUserModel model, IUserRepository userRepository, string id) => {
+app.MapDelete("/delete/{id}", (IUserRepository userRepository, string id) => {
     
 })
-.WithName("Delete account").AddDefaultStatusCodes();
+.WithName("Delete account").RequireAuthorization().AddDefaultStatusCodes();
 
 // Reset password account route.
 app.MapPut("/resetpassword/{id}", async (IUserRepository userRepository, PasswordResetModel model) => {
@@ -131,6 +128,8 @@ app.MapPut("/resetpassword/{id}", async (IUserRepository userRepository, Passwor
     }
     return Results.Ok();
 })
-.WithName("Reset password").AddDefaultStatusCodes();
+.WithName("Reset password").RequireAuthorization().AddDefaultStatusCodes();
 
+app.UseAuthentication();
+app.UseAuthorization();
 app.Run();

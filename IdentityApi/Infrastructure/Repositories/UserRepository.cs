@@ -37,6 +37,14 @@ public sealed class UserRepository : IUserRepository
     }
 
     /// <inheritdoc />
+    public async Task<(IdentityUser, IList<string>?)> GetUserByUserName(string? userName)
+    {
+        var user = await _userManager.FindByNameAsync(userName);
+        var roles = await _userManager.GetRolesAsync(user);
+        return (user, roles);
+    }
+
+    /// <inheritdoc />
     public async Task<(IdentityUser, IList<string>?)> GetUserById(string? id)
     {
         var user = await _userManager.FindByEmailAsync(id);
@@ -74,10 +82,10 @@ public sealed class UserRepository : IUserRepository
     }
 
     /// <inheritdoc />
-    public async Task<IdentityResult> ResetPassword(string? id, string? password)
+    public async Task<IdentityResult> ResetPassword(string? id, string? newPassword)
     {
         var user = await _userManager.FindByIdAsync(id);
         var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-        return await _userManager.ResetPasswordAsync(user, resetToken, password);
+        return await _userManager.ResetPasswordAsync(user, resetToken, newPassword);
     }
 }

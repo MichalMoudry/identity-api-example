@@ -16,7 +16,7 @@ public sealed class ApiTests
     {
         await using var identityApi = new IdentityApi();
         var client = identityApi.CreateClient();
-        var payload = new UserModel(
+        var payload = new RegisterModel(
             "test@test.com",
             "test_user",
             "Password1."
@@ -25,7 +25,7 @@ public sealed class ApiTests
         {
             CreateDb(scope);
         }
-        var response = await client.PostAsJsonAsync<UserModel>("/login", payload);
+        var response = await client.PostAsJsonAsync<RegisterModel>("/login", payload);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
@@ -37,7 +37,7 @@ public sealed class ApiTests
     {
         await using var identityApi = new IdentityApi();
         var client = identityApi.CreateClient();
-        var payload = new UserModel(
+        var payload = new RegisterModel(
             "test@test.com",
             "test_user",
             "Password1."
@@ -46,7 +46,7 @@ public sealed class ApiTests
         {
             CreateDb(scope);
         }
-        var response = await client.PostAsJsonAsync<UserModel>("/register", payload);
+        var response = await client.PostAsJsonAsync<RegisterModel>("/register", payload);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
