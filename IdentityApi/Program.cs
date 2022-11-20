@@ -7,6 +7,7 @@ using IdentityApi.Models;
 using IdentityApi.Helpers;
 using IdentityApi.Extensions;
 using IdentityApi.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 var endpointHelper = new RouteHelper();
@@ -44,7 +45,13 @@ builder.Services.Configure<IdentityOptions>(options =>
 {
     options.User.RequireUniqueEmail = true;
 })
-.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+.AddAuthentication(options =>
+{
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
     {
@@ -54,8 +61,13 @@ builder.Services.Configure<IdentityOptions>(options =>
     };
 });
 builder.Services.AddAuthorization();
+builder.Services.AddHealthChecks();
 
 var app = builder.Build();
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseHealthChecks("/health");
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -108,28 +120,26 @@ app.MapPost("/login", async ([FromBody] LoginModel model, IUserRepository userRe
 .WithName("Login").AddDefaultStatusCodes();
 
 // Edit account route.
-app.MapPut("/edit/{id}", (IUserRepository userRepository, string id) => {
+app.MapPut("/edit/{id}", [Authorize] (IUserRepository userRepository, string id) => {
 
 })
 .WithName("Edit account").RequireAuthorization().AddDefaultStatusCodes();
 
 // Delete account route.
-app.MapDelete("/delete/{id}", (IUserRepository userRepository, string id) => {
+app.MapDelete("/delete/{id}", [Authorize] (IUserRepository userRepository, string id) => {
     
 })
-.WithName("Delete account").RequireAuthorization().AddDefaultStatusCodes();
+.WithName("Delete account").AddDefaultStatusCodes();
 
 // Reset password account route.
-app.MapPut("/resetpassword/{id}", async (IUserRepository userRepository, PasswordResetModel model) => {
-    var resetResult = await userRepository.ResetPassword(model.Id, model.NewPassword);
+app.MapPut("/resetpassword/{id}", [Authorize] async (string id, IUserRepository userRepository, [FromBody] PasswordResetModel model) => {
+    var resetResult = await userRepository.ResetPassword(id, model.NewPassword);
     if (!resetResult.Succeeded)
     {
         return Results.BadRequest();
     }
-    return Results.Ok();
+    return Results.Ok("Password was reset.");
 })
-.WithName("Reset password").RequireAuthorization().AddDefaultStatusCodes();
+.WithName("Reset password").AddDefaultStatusCodes();
 
-app.UseAuthentication();
-app.UseAuthorization();
 app.Run();

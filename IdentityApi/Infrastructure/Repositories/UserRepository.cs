@@ -85,6 +85,10 @@ public sealed class UserRepository : IUserRepository
     public async Task<IdentityResult> ResetPassword(string? id, string? newPassword)
     {
         var user = await _userManager.FindByIdAsync(id);
+        if (user == null)
+        {
+            return IdentityResult.Failed();
+        }
         var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
         return await _userManager.ResetPasswordAsync(user, resetToken, newPassword);
     }
