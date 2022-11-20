@@ -3,12 +3,12 @@ namespace IdentityApi.Validators;
 using FluentValidation;
 using IdentityApi.Models;
 
-public sealed class UserModelValidator : AbstractValidator<UserModel>
+public sealed class RegisterModelValidator : AbstractValidator<RegisterModel>
 {
-    public UserModelValidator()
+    public RegisterModelValidator()
     {
-        _ = RuleFor(x => x.UserName).NotNull().NotEmpty().MinimumLength(3);
-        _ = RuleFor(x => x.Email).NotNull().NotEmpty().EmailAddress();
-        _ = RuleFor(x => x.Password).NotNull().NotEmpty().MinimumLength(7);
+        RuleFor(x => x.UserName).NotNull().NotEmpty().MinimumLength(3);
+        RuleFor(x => x.Email).NotNull().NotEmpty().EmailAddress();
+        RuleFor(x => x.Password).NotNull().NotEmpty().MinimumLength(7);
     }
 }

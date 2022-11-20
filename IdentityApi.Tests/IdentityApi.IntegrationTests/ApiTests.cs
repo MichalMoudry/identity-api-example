@@ -1,11 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using IdentityApi.Infrastructure;
 using IdentityApi.Models;
 
@@ -21,7 +16,7 @@ public sealed class ApiTests
     {
         await using var identityApi = new IdentityApi();
         var client = identityApi.CreateClient();
-        var payload = new UserModel(
+        var payload = new RegisterModel(
             "test@test.com",
             "test_user",
             "Password1."
@@ -30,7 +25,7 @@ public sealed class ApiTests
         {
             CreateDb(scope);
         }
-        var response = await client.PostAsJsonAsync<UserModel>("/login", payload);
+        var response = await client.PostAsJsonAsync<RegisterModel>("/login", payload);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
@@ -42,7 +37,7 @@ public sealed class ApiTests
     {
         await using var identityApi = new IdentityApi();
         var client = identityApi.CreateClient();
-        var payload = new UserModel(
+        var payload = new RegisterModel(
             "test@test.com",
             "test_user",
             "Password1."
@@ -51,7 +46,7 @@ public sealed class ApiTests
         {
             CreateDb(scope);
         }
-        var response = await client.PostAsJsonAsync<UserModel>("/register", payload);
+        var response = await client.PostAsJsonAsync<RegisterModel>("/register", payload);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -83,22 +78,5 @@ public sealed class ApiTests
         }
         var context = serviceScope.ServiceProvider.GetRequiredService<ApiDbContext>();
         context.Database.EnsureCreated();
-    }
-}
-
-internal sealed class IdentityApi : WebApplicationFactory<Program>
-{
-    protected override IHost CreateHost(IHostBuilder builder)
-    {
-        var root = new InMemoryDatabaseRoot();
-
-        builder.ConfigureServices(services =>
-        {
-            services.RemoveAll(typeof(DbContextOptions<ApiDbContext>));
-            services.AddDbContext<ApiDbContext>(options =>
-                options.UseInMemoryDatabase("TestDb", root));
-        });
-
-        return base.CreateHost(builder);
     }
 }

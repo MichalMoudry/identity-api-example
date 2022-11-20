@@ -1,4 +1,3 @@
-using Ardalis.GuardClauses;
 using Microsoft.AspNetCore.Identity;
 
 namespace IdentityApi.Infrastructure.Repositories;
@@ -38,6 +37,22 @@ public sealed class UserRepository : IUserRepository
     }
 
     /// <inheritdoc />
+    public async Task<(IdentityUser, IList<string>?)> GetUserByUserName(string? userName)
+    {
+        var user = await _userManager.FindByNameAsync(userName);
+        var roles = await _userManager.GetRolesAsync(user);
+        return (user, roles);
+    }
+
+    /// <inheritdoc />
+    public async Task<(IdentityUser, IList<string>?)> GetUserById(string? id)
+    {
+        var user = await _userManager.FindByEmailAsync(id);
+        var roles = await _userManager.GetRolesAsync(user);
+        return (user, roles);
+    }
+
+    /// <inheritdoc />
     public async Task<IdentityResult> UpdateUser(string? id, string? email, string? password)
     {
         var isEmailNullOrEmpty = string.IsNullOrEmpty(email);
@@ -67,10 +82,14 @@ public sealed class UserRepository : IUserRepository
     }
 
     /// <inheritdoc />
-    public async Task<IdentityResult> ResetPassword(string? id, string? password)
+    public async Task<IdentityResult> ResetPassword(string? id, string? newPassword)
     {
         var user = await _userManager.FindByIdAsync(id);
+        if (user == null)
+        {
+            return IdentityResult.Failed();
+        }
         var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-        return await _userManager.ResetPasswordAsync(user, resetToken, password);
+        return await _userManager.ResetPasswordAsync(user, resetToken, newPassword);
     }
 }

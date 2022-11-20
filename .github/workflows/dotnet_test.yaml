@@ -14,12 +14,9 @@ jobs:
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 6.0.x
-
     - name: Restore dependencies
-      run: dotnet restore ./IdentityApi/IdentityApi.sln
-
+      run: dotnet restore ./IdentityApi.sln
     - name: Build
-      run: dotnet build ./IdentityApi/IdentityApi.sln --no-restore
-
+      run: dotnet build ./IdentityApi.sln --no-restore
     - name: Test
-      run: dotnet test ./IdentityApi/IdentityApi.sln --filter Category=UnitTest --no-build --verbosity normal
+      run: dotnet test ./IdentityApi.sln --filter Category=UnitTest --no-build --verbosity normal

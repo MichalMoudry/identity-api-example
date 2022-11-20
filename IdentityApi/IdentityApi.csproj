@@ -18,6 +18,9 @@
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <InternalsVisibleTo Include="IdentityApi.IntegrationTests" />
   </ItemGroup>
 

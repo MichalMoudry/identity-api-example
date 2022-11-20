@@ -5,9 +5,9 @@ using IdentityApi.Models.Api;
 using IdentityApi.Validators;
 
 /// <summary>
-/// A model class for user's login.
+/// A model class for user's registration.
 /// </summary>
-public sealed record class UserModel(
+public sealed record class RegisterModel(
     [Required, MinLength(length: 3)]
     string? UserName,
     [Required, EmailAddress]
@@ -19,7 +19,7 @@ public sealed record class UserModel(
     /// <inheritdoc />
     public FluentValidation.Results.ValidationResult Validate()
     {
-        var validator = new UserModelValidator();
+        var validator = new RegisterModelValidator();
         return validator.Validate(this);
     }
 }
