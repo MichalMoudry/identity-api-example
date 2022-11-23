@@ -8,13 +8,13 @@ using Microsoft.IdentityModel.Tokens;
 /// <summary>
 /// Helper class for Identity API endpoints.
 /// </summary>
-public sealed class RouteHelper
+public static class RouteHelper
 {
     /// <summary>
     /// Method for creating an error message.
     /// </summary>
     /// <param name="errors">A collection of errors.</param>
-    public string CreateErrorMessage<T>(IEnumerable<T>? errors)
+    public static string CreateErrorMessage<T>(IEnumerable<T>? errors)
     {
         if (errors == null)
         {
@@ -28,7 +28,7 @@ public sealed class RouteHelper
     /// Method for creating a new signing key.
     /// </summary>
     /// <param name="securityKey">Security key.</param>
-    public SymmetricSecurityKey CreateSigningKey(string securityKey)
+    public static SymmetricSecurityKey CreateSigningKey(string securityKey)
     {
         return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey));
     }
@@ -41,7 +41,7 @@ public sealed class RouteHelper
     /// <param name="claims">User's claims.</param>
     /// <param name="signingKey">Symmetric sercurity key for signing the JWT token.</param>
     /// <returns>JWT token as a string.</returns>
-    public string CreateJwtToken(string issuer, string audience, IEnumerable<Claim> claims, SymmetricSecurityKey signingKey)
+    public static string CreateJwtToken(string issuer, string audience, IEnumerable<Claim> claims, SymmetricSecurityKey signingKey)
     {
         var signingCredentials = CreateSigningCredentials(signingKey);
         var token = new JwtSecurityToken(
@@ -58,7 +58,7 @@ public sealed class RouteHelper
     /// <param name="userName">User's name.</param>
     /// <param name="roles">A collection of user's roles.</param>
     /// <returns>List of claims for a default user.</returns>
-    public List<Claim> CreateClaimsForDefaultUser(string id, string email, string userName, IEnumerable<string>? roles)
+    public static List<Claim> CreateClaimsForDefaultUser(string id, string email, string userName, IEnumerable<string>? roles)
     {
         var claims = new List<Claim>
         {
@@ -77,7 +77,7 @@ public sealed class RouteHelper
     /// Method for creating a new signing credentials.
     /// </summary>
     /// <param name="signingKey">Security key.</param>
-    private SigningCredentials CreateSigningCredentials(SymmetricSecurityKey signingKey)
+    private static SigningCredentials CreateSigningCredentials(SymmetricSecurityKey signingKey)
     {
         return new SigningCredentials(
             signingKey,
