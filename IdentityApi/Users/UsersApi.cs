@@ -68,8 +68,13 @@ internal static class UsersApi
         .WithName("Edit account").RequireAuthorization().AddDefaultStatusCodes();
 
         // Delete account route.
-        group.MapDelete("/delete/{id}", [Authorize] (IUserRepository userRepository, string id) => {
-            
+        group.MapDelete("/delete/{id}", [Authorize] async (IUserRepository userRepository, string id) => {
+            var result = await userRepository.DeleteUser(id);
+            if (!result.Succeeded)
+            {
+                return Results.BadRequest();
+            }
+            return Results.Ok();
         })
         .WithName("Delete account").AddDefaultStatusCodes();
 
