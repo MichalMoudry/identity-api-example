@@ -48,9 +48,9 @@ public interface IUserRepository
     /// <summary>
     /// Method for deleting a user from the database.
     /// </summary>
-    /// <param name="email">User's email.</param>
+    /// <param name="id">User's ID.</param>
     /// <returns>Operation (deletion of a user) result.</returns>
-    Task<IdentityResult> DeleteUser(string? email);
+    Task<IdentityResult> DeleteUser(string? id);
 
     /// <summary>
     /// Method for reseting user's password.
